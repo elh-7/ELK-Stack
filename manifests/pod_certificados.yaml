@@ -1,15 +1,52 @@
-# ========================
+# ================================================================
 # POD CERTIFICADOS
-# ========================
+# Este Pod se utiliza para generar o gestionar certificados de seguridad
+# (por ejemplo, para habilitar la comunicación HTTPS entre componentes del stack EFK).
+# Su propósito principal es disponer temporalmente del entorno de Elasticsearch
+# dentro del clúster para ejecutar comandos de generación o validación de certificados.
+# ================================================================
+
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: v1                             # Versión de la API de Kubernetes utilizada para Pods
+kind: Pod                                  # Tipo de recurso: Pod (unidad mínima ejecutable en Kubernetes)
+
 metadata:
-  name: elastic-cert-gen
-  namespace: logging
+  name: elastic-cert-gen                   # Nombre del Pod (identificador dentro del namespace)
+  namespace: logging                       # Namespace donde se creará el Pod (coincide con el stack de logging)
+
 spec:
-  containers:
-  - name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
+  containers:                              # Lista de contenedores que se ejecutarán dentro del Pod
+  - name: elasticsearch                    # Nombre asignado al contenedor (puede usarse para logs o depuración)
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4  
+                                            # Imagen oficial de Elasticsearch versión 7.17.4
+                                            # Se usa porque contiene las utilidades necesarias para gestionar certificados
+                                            # (por ejemplo: elasticsearch-certutil o elasticsearch-keystore)
+    
     command: ["/bin/sh", "-c", "sleep 3600"]
-  restartPolicy: Never
+                                            # Sobrescribe el comando por defecto del contenedor
+                                            # Ejecuta un shell que duerme durante 3600 segundos (1 hora)
+                                            # Esto mantiene el contenedor activo mientras se ejecutan comandos manuales
+                                            # dentro de él mediante 'kubectl exec'
+                                            
+                                            # Ejemplo de uso práctico:
+                                            #   kubectl exec -it elastic-cert-gen -n logging -- bash
+                                            #   elasticsearch-certutil ca
+                                            #   elasticsearch-certutil cert --ca elastic-stack-ca.p12
+                                            # Luego, los certificados generados se pueden copiar a un Secret:
+                                            #   kubectl create secret generic elastic-cert --from-file=certs/
+
+  restartPolicy: Never                     # Política de reinicio:
+                                            # "Never" significa que Kubernetes no reiniciará el Pod automáticamente
+                                            # después de que el contenedor finalice o falle.
+                                            # Es ideal para tareas temporales o de mantenimiento.
+
+# ---------------------------------------------------------------
+# RESUMEN FUNCIONAL:
+# - Este Pod no forma parte del flujo de datos del stack EFK.
+# - Se usa temporalmente para generar certificados TLS/SSL o almacenar claves seguras.
+# - No ejecuta Elasticsearch como servicio, solo mantiene el contenedor activo.
+# - Después de generar los certificados, se recomienda eliminar el Pod:
+#     kubectl delete pod elastic-cert-gen -n logging
+# - Los certificados generados pueden montarse como Secret o ConfigMap
+#   en los Deployments de Elasticsearch y Kibana para habilitar HTTPS seguro.
+# ---------------------------------------------------------------
