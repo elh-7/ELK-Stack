@@ -1,14 +1,43 @@
-apiVersion: v1
-kind: Service
+# ================================================================
+# ELASTICSEARCH SERVICE
+# Servicio Headless para el clúster de Elasticsearch
+# Permite la comunicación directa entre Pods y expone
+# los puertos necesarios para la API REST y la comunicación interna.
+# ================================================================
+
+apiVersion: v1                        # Versión de la API de Kubernetes usada para este recurso.
+kind: Service                         # Tipo de recurso: Service (define reglas de red para acceder a los Pods).
+
 metadata:
-  name: elasticsearch
-  namespace: logging
+  name: elasticsearch                 # Nombre del servicio (identificador DNS dentro del clúster).
+  namespace: logging                  # Espacio de nombres donde se despliega el servicio.
+
 spec:
-  clusterIP: None
-  ports:
-    - port: 9200
-      name: rest
-    - port: 9300
-      name: inter-node
-  selector:
-    app: elasticsearch
+  clusterIP: None                     # "None" convierte el servicio en Headless.
+                                      # En lugar de asignar una IP fija, Kubernetes crea registros DNS para cada Pod.
+                                      # Esto permite que las aplicaciones (como Elasticsearch) descubran otros nodos por nombre.
+                                      # Ejemplo de DNS generado:
+                                      # elasticsearch-0.elasticsearch.logging.svc.cluster.local
+
+  ports:                              # Lista de puertos expuestos por el servicio.
+    - port: 9200                      # Puerto principal de la API REST de Elasticsearch.
+      name: rest                      # Nombre descriptivo del puerto (REST HTTP interface).
+                                      # Usado por clientes como Kibana, curl o Logstash para realizar consultas y administración.
+    - port: 9300                      # Puerto interno para la comunicación entre nodos.
+      name: inter-node                # Nombre descriptivo del puerto (inter-node communication).
+                                      # Usado para sincronización, descubrimiento y replicación dentro del clúster.
+
+  selector:                           # Selector que asocia este servicio a los Pods correspondientes.
+    app: elasticsearch                # Vincula el servicio con los Pods que tienen la etiqueta "app: elasticsearch".
+                                      # Estos Pods pertenecen normalmente al StatefulSet de Elasticsearch.
+
+# ---------------------------------------------------------------
+# RESUMEN FUNCIONAL:
+# - Tipo: Headless Service (sin IP fija, sin balanceo de carga).
+# - clusterIP: None → permite el descubrimiento directo entre Pods.
+# - Puerto 9200 → API REST (para clientes externos o Kibana).
+# - Puerto 9300 → Comunicación interna entre nodos del clúster.
+# - Selector → asocia el servicio con los Pods del StatefulSet.
+# - Este servicio es esencial para el descubrimiento de nodos
+#   y la correcta formación del clúster distribuido de Elasticsearch.
+# ---------------------------------------------------------------
