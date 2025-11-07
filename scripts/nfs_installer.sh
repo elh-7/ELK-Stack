@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ================================================================
 # Script de configuración automática de NFS + CSI Driver para Kubernetes
-# Autor: Axel (adaptado por ChatGPT)
+# Autor: Axel
 # Uso:
 #   sudo ./setup-nfs-csi.sh <RED> <IP_SERVIDOR>
 #
@@ -100,4 +100,5 @@ echo "✅ Instalación y configuración completada correctamente."
 sudo firewall-cmd --permanent --add-service=nfs
 sudo firewall-cmd --permanent --add-service=rpc-bind
 sudo firewall-cmd --permanent --add-service=mountd
+
 sudo firewall-cmd --reload
