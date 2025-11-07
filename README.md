@@ -12,10 +12,16 @@ El propósito fundamental de este proyecto final para el Diplomado de Infraestru
   - Emanuel López
 
 # 🔧 Prerrequisitos (versiones de software)
-  1. Rocky Linux 9.6
-  2. Elasticsearch
-  3. Flunted
-  4. Kibana
+  1. Rocky Linux 9.6 o Alma Linux 9
+  2. Elasticsearch 7.17.4
+  3. Flunted v1-debian-elasticsearch 6d7521c55bc7
+  4. Kibana 7.17.4
+
+# 🔧 Prerrequisitos de hardware
+
+  Consulte: https://www.elastic.co/docs/deploy-manage/deploy/cloud-enterprise/ece-hardware-prereq
+  **NOTA IMPORTANTE:**
+  Considere la cantidad de nodos que va a desplegar para cubrir los requerimientos de hardware, la documentación indica que los recursos están pensados para un solo nodo. 
 
 # 🔗 Referencias y documentación
 
@@ -49,6 +55,17 @@ CNCF. (2024). Cloud Native Observability Landscape Report. Cloud Native Computin
 
 Docker Inc. (2024). Docker Logging and Monitoring Overview. Docker Docs. Recuperado de https://docs.docker.com/config/containers/logging/
 
-# 📦 Instalación paso a paso ⚙️ Configuración 🧪 Testing y validación 🐛 Troubleshooting
+# 📦 Instalación paso a paso y Configuración
 
-Vease en los manuales de instalación, configuración y automatización correspondiente.
+Para desplegar el proyecto ELK-Stack, revise detenidamente el apartado de docs para consultar los manuales de instalación. Una vez revisado y comprendido su contenido ejecute los scrips en el siguiente orden. Recuerde tener privilegios de administrador y que el scrip tenga permisos de ejecución. Puede apoyarse de: 
+
+chmod +x nombre_del_scrip.sh  -> para darle permiso de ejecución
+./nombre_del_scrip.sh -> para la ejecución
+
+**Orden de ejecución**
+
+1. kubernetes_installer.sh
+2. nfs_installer.sh
+3. elk_stack_despliegue.sh
+4. certificados.sh
+
