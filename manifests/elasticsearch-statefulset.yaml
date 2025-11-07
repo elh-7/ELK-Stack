@@ -1,0 +1,84 @@
+apiVersion: apps/v1                             # Versión de la API usada para recursos del tipo StatefulSet (apps/v1 es la estable actual)
+kind: StatefulSet                               # Tipo de recurso: StatefulSet, usado para aplicaciones con estado como Elasticsearch
+metadata:                                       # Información descriptiva del objeto
+  name: elasticsearch                           # Nombre del StatefulSet (identificador dentro del namespace)
+  namespace: logging                            # Namespace donde se desplegará
+spec:                                           # Especificación del comportamiento deseado del StatefulSet
+  serviceName: "elasticsearch"                  # Nombre del servicio headless que administra los pods del StatefulSet
+  replicas: 3                                   # Número de réplicas (nodos) de Elasticsearch que se crearán
+  selector:                                     # Selector de etiquetas que identifica qué pods pertenecen a este StatefulSet
+    matchLabels:
+      app: elasticsearch                        # Coincide con los pods etiquetados como "app: elasticsearch"
+  template:                                     # Plantilla que define cómo se crearán los pods
+    metadata:
+      labels:
+        app: elasticsearch                      # Etiqueta aplicada a los pods, coincide con el selector anterior
+    spec:                                       # Especificación de los contenedores dentro de cada pod
+      containers:
+      - name: elasticsearch                     # Nombre del contenedor
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4  # Imagen de Elasticsearch con su versión
+        ports:                                  # Puertos expuestos por el contenedor
+        - containerPort: 9200                   # Puerto HTTP utilizado para acceder a Elasticsearch
+        - containerPort: 9300                   # Puerto de transporte para comunicación entre nodos del clúster
+        env:                                    # Variables de entorno que configuran el comportamiento del contenedor
+        - name: cluster.name                    # Nombre lógico del clúster de Elasticsearch
+          value: "efk-cluster"                  # Valor que identifica el clúster donde se agrupan los nodos
+        - name: node.name                       # Nombre dinámico del nodo, basado en el nombre del pod
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name           # Asigna automáticamente el nombre del pod al nodo de Elasticsearch
+        - name: discovery.seed_hosts            # Lista de hosts iniciales para descubrimiento entre nodos
+          value: "elasticsearch-0.elasticsearch.logging.svc.cluster.local,elasticsearch-1.elasticsearch.logging.svc.cluster.local,elasticsearch-2.elasticsearch.logging.svc.cluster.local"
+                                                 # Define las direcciones DNS internas de los tres pods/nodos del clúster
+        - name: cluster.initial_master_nodes    # Lista inicial de nodos maestros del clúster
+          value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+                                                 # Indica los nombres de los nodos elegibles para ser maestros durante la formación inicial del clúster
+        - name: network.host                    # Dirección de red donde el servicio escuchará
+          value: "0.0.0.0"                      # Escucha en todas las interfaces del contenedor (acceso interno y externo)
+        - name: ES_JAVA_OPTS                    # Opciones de configuración de la JVM (Java Virtual Machine)
+          value: "-Xms512m -Xmx512m"            # Asigna 512 MB de memoria mínima y máxima para el heap de Java
+        - name: xpack.security.enabled          # Habilita las funciones de seguridad de X-Pack
+          value: "true"                         # Activa autenticación, control de acceso y cifrado
+        - name: xpack.security.authc.api_key.enabled  # Habilita la autenticación basada en API keys
+          value: "true"                         # Permite el uso de claves API para acceso seguro
+        - name: ELASTIC_PASSWORD                # Define la contraseña del usuario "elastic" por defecto
+          value: "TuPasswordSeguro"             # Debe reemplazarse por una contraseña segura en producción
+        - name: xpack.security.transport.ssl.enabled  # Activa SSL/TLS para el canal de transporte interno entre nodos
+          value: "true"
+        - name: xpack.security.transport.ssl.verification_mode  # Modo de verificación SSL
+          value: "certificate"                  # Verifica certificados entre nodos (seguridad mutua)
+        - name: xpack.security.transport.ssl.key  # Ruta a la clave privada usada para cifrado de transporte
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.key"
+        - name: xpack.security.transport.ssl.certificate  # Ruta al certificado SSL del nodo
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.crt"
+        - name: xpack.security.transport.ssl.certificate_authorities  # Ruta al certificado de la autoridad CA
+          value: "/usr/share/elasticsearch/config/certs/ca.crt"
+
+        - name: xpack.security.http.ssl.enabled  # Activa SSL/TLS en el protocolo HTTP (para clientes)
+          value: "true"
+        - name: xpack.security.http.ssl.key      # Ruta a la clave privada para HTTP
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.key"
+        - name: xpack.security.http.ssl.certificate  # Ruta al certificado SSL para HTTP
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.crt"
+        - name: xpack.security.http.ssl.certificate_authorities  # Ruta al certificado CA para validación HTTPS
+          value: "/usr/share/elasticsearch/config/certs/ca.crt"
+        volumeMounts:                            # Montajes de volúmenes dentro del contenedor
+        - name: data                             # Volumen persistente donde se almacenan los datos del nodo
+          mountPath: /usr/share/elasticsearch/data
+        - name: certs                            # Volumen con los certificados SSL/TLS
+          mountPath: /usr/share/elasticsearch/config/certs
+          readOnly: true                         # El volumen se monta en modo solo lectura para seguridad
+      volumes:                                   # Definición de volúmenes usados en los pods
+      - name: certs                              # Volumen llamado "certs"
+        secret:                                  # Se obtiene desde un Secret de Kubernetes
+          secretName: elastic-certs              # Nombre del Secret que contiene los certificados SSL
+      restartPolicy: Always                      # Política de reinicio: los pods siempre se reiniciarán si fallan
+  volumeClaimTemplates:                          # Plantilla para generar volúmenes persistentes (uno por pod)
+  - metadata:
+      name: data                                 # Nombre del volumen persistente por pod
+    spec:
+      accessModes: ["ReadWriteOnce"]             # Modo de acceso: solo un nodo puede escribir a la vez
+      storageClassName: nfs-csi                  # Clase de almacenamiento (usará el driver NFS CSI)
+      resources:
+        requests:
+          storage: 10Gi                          # Solicita 10 GiB de almacenamiento persistente para cada nodo

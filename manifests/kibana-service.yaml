@@ -1,0 +1,13 @@
+apiVersion: v1                                  # Versión de la API de Kubernetes usada para recursos básicos del clúster (como Services, Pods, ConfigMaps, etc.)
+kind: Service                                   # Tipo de recurso: Service, proporciona una abstracción de red estable para acceder a los pods
+metadata:                                       # Metadatos descriptivos del objeto
+  name: kibana                                  # Nombre del servicio (debe ser único dentro del namespace)
+  namespace: logging                            # Namespace donde se crea el servicio; debe coincidir con el Deployment de Kibana
+spec:                                           # Especificación del comportamiento del servicio
+  type: NodePort                                # Tipo de servicio que expone el puerto del pod a través de un puerto del nodo (permite acceso externo)
+  ports:                                        # Lista de puertos gestionados por el servicio
+  - port: 5601                                  # Puerto interno del servicio (dentro del clúster); otros pods se conectan a este puerto
+    targetPort: 5601                            # Puerto dentro del contenedor de Kibana al que se redirige el tráfico
+    nodePort: 30001                             # Puerto del nodo (entre 30000-32767) que permite acceso externo desde fuera del clúster
+  selector:                                     # Selector que asocia este servicio con los pods correctos
+    app: kibana                                 # Coincide con la etiqueta "app: kibana" definida en el Deployment, conectando el tráfico al pod de Kibana

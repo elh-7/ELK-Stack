@@ -1,0 +1,32 @@
+apiVersion: apps/v1                              # Versión de la API usada para recursos del tipo Deployment (controlador de pods replicables)
+kind: Deployment                                 # Tipo de recurso: Deployment, usado para administrar réplicas y actualizaciones controladas de pods
+metadata:                                        # Metadatos descriptivos del objeto
+  name: kibana                                   # Nombre del Deployment (identificador único dentro del namespace)
+  namespace: logging                             # Namespace donde se desplegará Kibana
+spec:                                            # Especificación del comportamiento deseado del Deployment
+  replicas: 1                                    # Número de réplicas del pod (instancias de Kibana)
+  selector:                                      # Selector que indica qué pods pertenecen a este Deployment
+    matchLabels:
+      app: kibana                                # Coincide con los pods que tengan esta etiqueta
+  template:                                      # Plantilla usada para crear los pods gestionados por el Deployment
+    metadata:
+      labels:
+        app: kibana                              # Etiqueta aplicada a los pods generados (coincide con el selector)
+    spec:                                        # Especificación interna del pod
+      containers:                                # Lista de contenedores dentro del pod
+      - name: kibana                             # Nombre del contenedor
+        image: docker.elastic.co/kibana/kibana:7.17.4  
+                                                  # Imagen oficial de Kibana versión 7.17.4 desde el repositorio de Elastic
+        ports:                                   # Puertos expuestos por el contenedor
+        - containerPort: 5601                    # Puerto por defecto donde Kibana escucha peticiones HTTP
+        env:                                     # Variables de entorno para configurar el comportamiento de Kibana
+        - name: ELASTICSEARCH_HOSTS              # Define la URL del clúster de Elasticsearch al que Kibana se conectará
+          value: '["https://elasticsearch:9200"]'  # Lista en formato JSON de hosts; usa HTTPS en el puerto 9200 del servicio "elasticsearch"
+        - name: ELASTICSEARCH_USERNAME           # Nombre de usuario usado para la autenticación en Elasticsearch
+          value: "elastic"                       # Usuario administrador por defecto (debe tener permisos para consultar índices)
+        - name: ELASTICSEARCH_PASSWORD           # Contraseña asociada al usuario especificado
+          value: "TuPasswordSeguro"              # Debe reemplazarse por una contraseña real en entornos productivos
+        - name: SERVER_SSL_ENABLED               # Habilita o deshabilita SSL/TLS en el servidor web de Kibana
+          value: "false"                         # Valor "false" desactiva HTTPS interno (se usa HTTP sin cifrar dentro del clúster)
+        - name: ELASTICSEARCH_SSL_VERIFICATIONMODE  # Define el modo de verificación SSL para la conexión entre Kibana y Elasticsearch
+          value: "none"                          # "none" desactiva la validación del certificado (útil para certificados autofirmados o entornos de prueba)

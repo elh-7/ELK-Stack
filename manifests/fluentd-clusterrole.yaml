@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1     # Versión de la API usada para recursos de control de acceso (RBAC)
+kind: ClusterRole                            # Tipo de recurso: define un rol de permisos a nivel de clúster (no limitado por namespace)
+metadata:                                    # Metadatos del objeto
+  name: fluentd                              # Nombre del ClusterRole (identificador único dentro del clúster)
+rules:                                       # Lista de reglas (políticas) que especifican los permisos otorgados
+- apiGroups: [""]                            # Grupo de API vacío indica que aplica al "core group" (recursos básicos de Kubernetes)
+  resources:                                 # Lista de recursos del API a los que Fluentd tendrá acceso
+  - pods                                     # Permite acceso a información de los pods (para recopilar logs de sus contenedores)
+  - namespaces                               # Permite acceder a la información de los namespaces (útil para asociar logs a espacios de trabajo)
+  verbs: ["get","list","watch"]              # Acciones permitidas sobre los recursos:
+                                             # - get: obtener un recurso específico
+                                             # - list: listar todos los recursos
+                                             # - watch: observar cambios en tiempo real (útil para el flujo continuo de logs)

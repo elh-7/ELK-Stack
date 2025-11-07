@@ -1,0 +1,49 @@
+apiVersion: apps/v1                                 # Versión de la API usada para recursos de tipo controlador (apps/v1 es la versión estable)
+kind: DaemonSet                                    # Tipo de recurso: asegura que haya un pod de Fluentd ejecutándose en cada nodo del clúster
+metadata:                                          # Metadatos descriptivos del objeto
+  name: fluentd                                    # Nombre del DaemonSet
+  namespace: logging                               # Namespace donde se desplegará (debe coincidir con los demás componentes del stack EFK)
+  labels:                                          # Etiquetas asociadas al DaemonSet, útiles para selección y monitoreo
+    app: fluentd                                   # Etiqueta que identifica este DaemonSet y sus pods asociados
+spec:                                              # Especificación del comportamiento del DaemonSet
+  selector:                                        # Define cómo identificar los pods gestionados por este DaemonSet
+    matchLabels:
+      app: fluentd                                 # Selector que vincula el DaemonSet con los pods etiquetados como "app: fluentd"
+  template:                                        # Plantilla que describe la configuración de los pods que el DaemonSet creará
+    metadata:
+      labels:
+        app: fluentd                               # Etiqueta aplicada a los pods generados; debe coincidir con el selector
+    spec:                                          # Especificación interna de los pods
+      serviceAccountName: fluentd                  # Cuenta de servicio usada por los pods (define permisos mediante RBAC)
+      tolerations:                                 # Lista de tolerancias para que Fluentd pueda ejecutarse en nodos específicos
+      - key: node-role.kubernetes.io/master        # Permite ejecutar Fluentd también en nodos master (que usualmente están restringidos)
+        effect: NoSchedule                         # Efecto de la tolerancia: permite programar pods donde normalmente no se permite
+      containers:                                  # Lista de contenedores que se ejecutarán en cada pod
+      - name: fluentd                              # Nombre del contenedor
+        image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch  
+                                                    # Imagen oficial de Fluentd adaptada para Kubernetes y Elasticsearch
+        resources:                                 # Configuración de límites y solicitudes de recursos
+          limits:                                  # Máximos permitidos para este contenedor
+            memory: 512Mi                          # Límite máximo de memoria (512 MiB)
+          requests:                                # Recursos mínimos que el contenedor solicita para iniciar
+            cpu: 100m                              # Solicita 100 millicores de CPU
+            memory: 200Mi                          # Solicita 200 MiB de memoria como mínimo
+        volumeMounts:                              # Define los volúmenes que se montarán dentro del contenedor
+        - name: config                             # Volumen que contiene la configuración de Fluentd
+          mountPath: /fluentd/etc                  # Ruta interna donde se monta el ConfigMap (Fluentd buscará aquí su archivo fluent.conf)
+        - name: varlog                             # Volumen que da acceso a los logs del sistema
+          mountPath: /var/log                      # Directorio local de logs del host montado dentro del contenedor
+        - name: dockercontainers                   # Volumen que da acceso directo a los logs de contenedores Docker
+          mountPath: /var/lib/docker/containers    # Ruta interna de los contenedores del nodo donde Fluentd leerá logs
+          readOnly: true                           # Modo de solo lectura por seguridad (Fluentd solo necesita leer, no modificar)
+      terminationGracePeriodSeconds: 30            # Tiempo (en segundos) que Kubernetes espera antes de forzar el apagado del pod
+      volumes:                                     # Definición de los volúmenes disponibles para los pods
+      - name: config                               # Volumen que contiene la configuración principal de Fluentd
+        configMap:                                 # Fuente del volumen: un ConfigMap existente
+          name: fluentd-config                     # Nombre del ConfigMap (debe existir previamente con la clave fluent.conf)
+      - name: varlog                               # Volumen que da acceso a los logs del sistema del nodo
+        hostPath:                                  # Usa una ruta del sistema de archivos del nodo anfitrión
+          path: /var/log                           # Ruta local del host que se monta dentro del contenedor
+      - name: dockercontainers                     # Volumen con acceso directo a los logs de los contenedores Docker del nodo
+        hostPath:
+          path: /var/lib/docker/containers         # Ruta en el nodo donde Docker almacena los logs de cada contenedor

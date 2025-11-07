@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1     # Versión de la API usada para definir objetos RBAC (Roles, Bindings, etc.)
+kind: ClusterRoleBinding                     # Tipo de recurso: asocia un ClusterRole con uno o más sujetos (usuarios, grupos o cuentas de servicio)
+metadata:                                    # Metadatos del objeto
+  name: fluentd                              # Nombre del ClusterRoleBinding (identificador único en el clúster)
+roleRef:                                     # Referencia al rol (ClusterRole) que se va a enlazar
+  apiGroup: rbac.authorization.k8s.io        # Grupo de API donde se define el rol
+  kind: ClusterRole                          # Tipo de recurso al que se hace referencia (ClusterRole en este caso)
+  name: fluentd                              # Nombre del ClusterRole que se asignará (debe existir previamente)
+subjects:                                    # Lista de sujetos (entidades) que recibirán los permisos del rol
+- kind: ServiceAccount                       # Tipo de sujeto: una cuenta de servicio de Kubernetes
+  name: fluentd                              # Nombre de la ServiceAccount a la que se otorgarán los permisos
+  namespace: logging                         # Namespace donde se encuentra la ServiceAccount (ámbito de aplicación del permiso)
