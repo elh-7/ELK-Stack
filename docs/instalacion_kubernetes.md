@@ -290,6 +290,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
+* El nodo master es quien va a lanzar el comando para unirse al cluster guardalo en un lugar seguro
 * Inicializa el plano de control.
 * Crea la configuración para `kubectl`.
 * Permite al usuario administrar el clúster.
