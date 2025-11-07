@@ -304,6 +304,11 @@ echo "Worker preparado. Use el comando 'kubeadm join' del master..."
 * Indica que el nodo está listo para unirse mediante el comando `kubeadm join` generado por el master.
 
 ---
+### Vista Final con un despliegue correcto
+
+<img width="569" height="162" alt="image" src="https://github.com/user-attachments/assets/7bbc338d-fbc2-4aa6-b9bd-b8326b74621b" />
+
+---
 
 📘 **Autor:** Axel Bautista y Emanuel López
 📅 **Versión:** 1.0
