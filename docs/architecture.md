@@ -1,13 +1,10 @@
 # 🧩 Elasticsearch Components
 
-![Elasticsearch Components](<img width="1025" height="577" alt="image" src="https://github.com/user-attachments/assets/2ba47f8c-ef7b-4d7e-bd86-5ac538c43014" />
-)
-
-> Diagrama explicativo de la arquitectura interna de **Elasticsearch**, mostrando la relación entre *cluster*, *nodos*, *shards*, *réplicas* e *índices*.
+<img width="1025" height="577" alt="image" src="https://github.com/user-attachments/assets/2ba47f8c-ef7b-4d7e-bd86-5ac538c43014" />
 
 ---
 
-## 📘 Descripción general
+## 📘 Introducción
 
 **Elasticsearch** es un motor de búsqueda y análisis distribuido basado en **Apache Lucene**.  
 Su diseño permite almacenar, buscar y analizar grandes volúmenes de datos casi en tiempo real.
@@ -84,10 +81,9 @@ El diagrama anterior ilustra cómo los datos son organizados y distribuidos dent
 
 ---
 
-# Arquitectura y Flujo de Datos en **Fluentd**
+#  🧩 Arquitectura y Flujo de Datos en **Fluentd**
 
-![Fluentd Data Flow](<img width="911" height="291" alt="image" src="https://github.com/user-attachments/assets/af4dca37-1fe3-4e0a-ac61-573c4d74d5f8" />
-)
+<img width="911" height="291" alt="image" src="https://github.com/user-attachments/assets/af4dca37-1fe3-4e0a-ac61-573c4d74d5f8" />
 
 ## 📘 Introducción
 
@@ -203,10 +199,9 @@ Gracias a su arquitectura basada en *Input → Filter → Output*, permite const
 
 ---
 
-# Visualización y Análisis de Datos con **Kibana**
+# 🧩 Visualización y Análisis de Datos con **Kibana**
 
-![Kibana Data Visualization](<img width="2814" height="1154" alt="image" src="https://github.com/user-attachments/assets/f4b790f7-3873-42a2-baa8-2d87bf97d3f0" />
-)
+<img width="2814" height="1154" alt="image" src="https://github.com/user-attachments/assets/f4b790f7-3873-42a2-baa8-2d87bf97d3f0" />
 
 ## 📘 Introducción
 
