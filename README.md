@@ -8,7 +8,7 @@ Con ellas se construye una plataforma de observabilidad, capaz de recolectar, pr
 El propósito fundamental de este proyecto final para el Diplomado de Infraestructura en Tecnologías de la Información es implementar ELK Stack para centralizar la información de todos los sistemas, permitiendo detectar anomalías, correlacionar eventos, crear alertas y generar reportes visuales en tiempo real en un entorno completamente virtualizado.
 
 <p align="center">
-  <img width="424" height="238" alt="image" src="https://github.com/user-attachments/assets/f2a7cfb8-23ab-4f7f-aced-7748c9252531" />
+  <img width="624" height="438" alt="image" src="https://github.com/user-attachments/assets/f2a7cfb8-23ab-4f7f-aced-7748c9252531" />
 </p>
 
 
