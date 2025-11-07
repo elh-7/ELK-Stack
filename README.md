@@ -63,6 +63,10 @@ _sudo chown -R 1000:1000 /srv/nfs/k8s-storage/_
 
 _sudo chmod -R 777 /srv/nfs/k8s-storage_
 
+**3. Problema de conectividad entre nodos para instalacion de cluster**
+
+Dependiendo del sistema que se este creando, es posible que pueda ocurrir un error en la instalacion de kubernetes, ya sea porque no es posible comunicarse para crear el cluster o que posteriormente se pierda conectividad.Para este caso lo mejor es usar redes bridges que puedan recibir y transmitir informacion de internet asi como ver los otros nodos, o en su defecto configuraciones nats que se puedan ver entre ellas, debido a que por la configuracion de red puede llegar a pasar que aunque los nodos puedan conectarse a internet no tengan comunicacion entre si.
+
 # 🔗 Referencias y documentación
 
 Documentación oficial y fuentes técnicas primarias
