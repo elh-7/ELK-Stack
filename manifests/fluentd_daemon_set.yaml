@@ -1,52 +1,76 @@
-# ========================
+# ================================================================
 # FLUENTD DAEMONSET
-# ========================
----
-apiVersion: apps/v1
-kind: DaemonSet
+# Despliega un Pod Fluentd en cada nodo del clúster para recolectar logs
+# ================================================================
+
+---                                 # Separador de documento YAML (opcional)
+apiVersion: apps/v1                 # Versión de la API de Kubernetes para recursos de tipo DaemonSet
+kind: DaemonSet                     # Tipo de recurso: DaemonSet ejecuta un Pod por cada nodo del clúster
+
 metadata:
-  name: fluentd
-  namespace: logging
+  name: fluentd                     # Nombre del DaemonSet
+  namespace: logging                # Namespace donde se despliega (coincide con el del stack EFK)
   labels:
-    app: fluentd
+    app: fluentd                    # Etiqueta usada para identificar el componente Fluentd
+
 spec:
-  selector:
+  selector:                         # Selector que define qué Pods serán gestionados por este DaemonSet
     matchLabels:
-      app: fluentd
-  template:
+      app: fluentd                  # Debe coincidir con las etiquetas del template de Pod
+
+  template:                         # Plantilla que define cómo se crean los Pods en cada nodo
     metadata:
       labels:
-        app: fluentd
+        app: fluentd                # Etiqueta usada para asociar Pods a este DaemonSet y para el ServiceAccount
+
     spec:
-      serviceAccountName: fluentd
-      tolerations:
+      serviceAccountName: fluentd   # Asocia el Pod con un ServiceAccount específico (control de permisos RBAC)
+
+      tolerations:                  # Permite que Fluentd se ejecute también en nodos master/control-plane
       - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+        effect: NoSchedule          # Evita que los nodos master sean excluidos; permite ejecución si es necesario
+
       containers:
-      - name: fluentd
+      - name: fluentd               # Nombre del contenedor principal
         image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
-        resources:
+                                     # Imagen oficial preconfigurada de Fluentd con salida a Elasticsearch
+        resources:                  # Definición de recursos solicitados y límites
           limits:
-            memory: 512Mi
+            memory: 512Mi           # Límite máximo de memoria asignada al contenedor
           requests:
-            cpu: 100m
-            memory: 200Mi
-        volumeMounts:
+            cpu: 100m               # CPU mínima garantizada
+            memory: 200Mi           # Memoria mínima garantizada
+
+        volumeMounts:               # Define los volúmenes que se montarán dentro del contenedor
         - name: config
-          mountPath: /fluentd/etc
+          mountPath: /fluentd/etc   # Monta la configuración desde el ConfigMap en el directorio de Fluentd
         - name: varlog
-          mountPath: /var/log
+          mountPath: /var/log       # Monta los logs del sistema y contenedores del nodo
         - name: dockercontainers
-          mountPath: /var/lib/docker/containers
-          readOnly: true
-      terminationGracePeriodSeconds: 30
-      volumes:
+          mountPath: /var/lib/docker/containers  # Monta los logs específicos de los contenedores Docker
+          readOnly: true            # Se monta como solo lectura para evitar modificaciones accidentales
+
+      terminationGracePeriodSeconds: 30  
+                                    # Tiempo (en segundos) que se espera antes de forzar la finalización del Pod
+                                    # Permite a Fluentd procesar y enviar los últimos logs antes de detenerse
+
+      volumes:                      # Definición de volúmenes disponibles en los Pods del DaemonSet
       - name: config
         configMap:
-          name: fluentd-config
+          name: fluentd-config       # Monta el ConfigMap creado anteriormente como fuente de configuración principal
       - name: varlog
         hostPath:
-          path: /var/log
+          path: /var/log             # Monta el directorio /var/log del host (acceso a logs del sistema)
       - name: dockercontainers
         hostPath:
-          path: /var/lib/docker/containers
+          path: /var/lib/docker/containers  # Monta la ruta donde Docker guarda los logs de contenedores
+
+# ---------------------------------------------------------------
+# RESUMEN FUNCIONAL:
+# - Despliega un Pod de Fluentd en cada nodo del clúster (DaemonSet).
+# - Usa un ConfigMap externo para su configuración principal (fluent.conf).
+# - Lee los logs desde /var/log y /var/lib/docker/containers del host.
+# - Envia los logs al servicio de Elasticsearch (definido previamente).
+# - Se puede ejecutar en nodos master gracias a las toleraciones.
+# - Limita recursos para optimizar consumo sin afectar rendimiento.
+# ---------------------------------------------------------------
