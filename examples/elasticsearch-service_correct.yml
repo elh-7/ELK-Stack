@@ -1,16 +1,40 @@
-apiVersion: v1
-kind: Service
+# ================================================================
+# ELASTICSEARCH SERVICE
+# Servicio Headless que permite la comunicación interna entre Pods
+# y expone los puertos HTTP y de transporte del clúster de Elasticsearch.
+# ================================================================
+
+apiVersion: v1                         # Versión de la API de Kubernetes usada para definir el recurso Service.
+kind: Service                          # Tipo de recurso: Service (permite la comunicación entre Pods o con el exterior).
+
 metadata:
-  name: elasticsearch
-  namespace: logging
+  name: elasticsearch                  # Nombre asignado al servicio (usado en DNS interno del clúster).
+  namespace: logging                   # Namespace donde se despliega el servicio (entorno de logging centralizado).
+
 spec:
-  clusterIP: None
-  selector:
-    app: elasticsearch
-  ports:
-    - name: http
-      port: 9200
-      targetPort: 9200
-    - name: transport
-      port: 9300
-      targetPort: 9300
+  clusterIP: None                      # "None" define que este servicio es Headless.
+                                       # No tiene IP fija asignada, lo que permite la comunicación directa entre Pods.
+                                       # Es ideal para StatefulSets como Elasticsearch, donde cada Pod necesita un hostname único.
+
+  selector:                            # Define qué Pods serán seleccionados por este servicio.
+    app: elasticsearch                 # Coincide con la etiqueta "app: elasticsearch" de los Pods definidos en el StatefulSet.
+
+  ports:                               # Lista de puertos expuestos por el servicio.
+    - name: http                       # Nombre lógico del puerto, útil para referencia interna.
+      port: 9200                       # Puerto que se expone dentro del clúster.
+                                       # Usado por clientes externos (como Kibana o curl) para acceder a la API REST de Elasticsearch.
+      targetPort: 9200                 # Puerto dentro del contenedor donde escucha Elasticsearch para peticiones HTTP.
+
+    - name: transport                  # Nombre lógico del puerto de transporte interno.
+      port: 9300                       # Puerto expuesto dentro del clúster para comunicación entre nodos.
+                                       # Usado para sincronización, descubrimiento y replicación de datos entre Pods.
+      targetPort: 9300                 # Puerto interno del contenedor que maneja la comunicación de clúster.
+
+# ---------------------------------------------------------------
+# RESUMEN FUNCIONAL:
+# - Tipo: Headless Service (sin balanceo de carga).
+# - Puerto 9200 → REST API de Elasticsearch (comunicación externa, Kibana o cURL).
+# - Puerto 9300 → Comunicación interna entre nodos del clúster.
+# - Selector "app: elasticsearch" → vincula el servicio con los Pods del StatefulSet.
+# - Fundamental para el descubrimiento de nodos dentro del clúster distribuido.
+# ---------------------------------------------------------------
