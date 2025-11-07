@@ -20,8 +20,25 @@ El propósito fundamental de este proyecto final para el Diplomado de Infraestru
 # 🔧 Prerrequisitos de hardware
 
   Consulte: https://www.elastic.co/docs/deploy-manage/deploy/cloud-enterprise/ece-hardware-prereq
+  
   **NOTA IMPORTANTE:**
+  
   Considere la cantidad de nodos que va a desplegar para cubrir los requerimientos de hardware, la documentación indica que los recursos están pensados para un solo nodo. 
+
+# 📦 Instalación paso a paso y Configuración
+
+Para desplegar el proyecto ELK-Stack, revise detenidamente el apartado de docs para consultar los manuales de instalación. Una vez revisado y comprendido su contenido ejecute los scrips en el siguiente orden. Recuerde tener privilegios de administrador y que el scrip tenga permisos de ejecución. Puede apoyarse de: 
+
+chmod +x nombre_del_scrip.sh  -> para darle permiso de ejecución
+./nombre_del_scrip.sh -> para la ejecución
+
+**Orden de ejecución**
+
+1. kubernetes_installer.sh
+2. nfs_installer.sh
+3. elk_stack_despliegue.sh
+4. certificados.sh
+
 
 # 🔗 Referencias y documentación
 
@@ -55,17 +72,4 @@ CNCF. (2024). Cloud Native Observability Landscape Report. Cloud Native Computin
 
 Docker Inc. (2024). Docker Logging and Monitoring Overview. Docker Docs. Recuperado de https://docs.docker.com/config/containers/logging/
 
-# 📦 Instalación paso a paso y Configuración
-
-Para desplegar el proyecto ELK-Stack, revise detenidamente el apartado de docs para consultar los manuales de instalación. Una vez revisado y comprendido su contenido ejecute los scrips en el siguiente orden. Recuerde tener privilegios de administrador y que el scrip tenga permisos de ejecución. Puede apoyarse de: 
-
-chmod +x nombre_del_scrip.sh  -> para darle permiso de ejecución
-./nombre_del_scrip.sh -> para la ejecución
-
-**Orden de ejecución**
-
-1. kubernetes_installer.sh
-2. nfs_installer.sh
-3. elk_stack_despliegue.sh
-4. certificados.sh
 
