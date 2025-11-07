@@ -1,0 +1,15 @@
+# ========================
+# POD CERTIFICADOS
+# ========================
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: elastic-cert-gen
+  namespace: logging
+spec:
+  containers:
+  - name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
+    command: ["/bin/sh", "-c", "sleep 3600"]
+  restartPolicy: Never
