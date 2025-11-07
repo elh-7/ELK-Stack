@@ -125,7 +125,7 @@ for ((i=1; i<=total_nodos; i++)); do
     ip_octeto=$((ip_octeto + 1))
 done
 
-echo "✅ Entradas agregadas a /etc/hosts correctamente."
+echo "Entradas agregadas a /etc/hosts correctamente."
 
 # --- Inicializar master o preparar worker ---
 if [[ "$tipo" == "m" ]]; then
@@ -136,7 +136,8 @@ if [[ "$tipo" == "m" ]]; then
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-    echo "✅ Master inicializado correctamente."
+    echo "Master inicializado correctamente."
 else
-    echo "✅ Worker preparado. Use el comando 'kubeadm join' del master para unir este nodo."
+    echo "Worker preparado. Use el comando 'kubeadm join' del master para unir este nodo."
 fi
+
