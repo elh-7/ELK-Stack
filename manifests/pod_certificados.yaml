@@ -39,14 +39,3 @@ spec:
                                             # "Never" significa que Kubernetes no reiniciará el Pod automáticamente
                                             # después de que el contenedor finalice o falle.
                                             # Es ideal para tareas temporales o de mantenimiento.
-
-# ---------------------------------------------------------------
-# RESUMEN FUNCIONAL:
-# - Este Pod no forma parte del flujo de datos del stack EFK.
-# - Se usa temporalmente para generar certificados TLS/SSL o almacenar claves seguras.
-# - No ejecuta Elasticsearch como servicio, solo mantiene el contenedor activo.
-# - Después de generar los certificados, se recomienda eliminar el Pod:
-#     kubectl delete pod elastic-cert-gen -n logging
-# - Los certificados generados pueden montarse como Secret o ConfigMap
-#   en los Deployments de Elasticsearch y Kibana para habilitar HTTPS seguro.
-# ---------------------------------------------------------------
