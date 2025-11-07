@@ -1,4 +1,4 @@
-## Comandos Originales
+### Comandos Originales
 
 ### 1. Ver nodos de Elasticsearch
 bash
@@ -36,7 +36,7 @@ kubectl get pod -n logging -o wide
 
 *Explicación*: Lista todos los pods en el namespace logging mostrando información extendida (IPs, nodos, etc.).
 
-## Comando Adicional - Prueba de Conectividad
+### Comando Adicional - Prueba de Conectividad
 
 ### 7. Pod temporal para pruebas de conectividad
 bash
@@ -46,11 +46,11 @@ kubectl run -it --rm debug-pod --image=busybox -n logging -- /bin/sh
 
 *Uso típico dentro del pod*:
 bash
-# Probar conectividad a Elasticsearch
+### Probar conectividad a Elasticsearch
 wget -O- http://elasticsearch-0:9200
 
-# Probar DNS resolution
+### Probar DNS resolution
 nslookup elasticsearch-0
 
-# Probar conectividad a otros servicios
+### Probar conectividad a otros servicios
 telnet fluentd-svc 24224
