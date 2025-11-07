@@ -131,6 +131,3 @@ secretName: elastic-certs
 📘 **Autor:** Axel Bautista y Emanuel López
 📅 **Versión:** 1.0
 🧭 **Compatibilidad:** RHEL / Rocky / AlmaLinux / Fedora
-
-```
-
