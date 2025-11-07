@@ -94,7 +94,7 @@ echo ">>> Verificando StorageClass..."
 kubectl get storageclass
 kubectl describe storageclass nfs-csi
 
-echo "✅ Instalación y configuración completada correctamente."
+echo "Instalación y configuración completada correctamente."
 
 
 sudo firewall-cmd --permanent --add-service=nfs
@@ -102,3 +102,4 @@ sudo firewall-cmd --permanent --add-service=rpc-bind
 sudo firewall-cmd --permanent --add-service=mountd
 
 sudo firewall-cmd --reload
+
