@@ -11,13 +11,13 @@ El propósito fundamental de este proyecto final para el Diplomado de Infraestru
   - Axel Bautista
   - Emanuel López
 
-# 🔧 Prerrequisitos (versiones de software)
+# 🔧 Pre-requisitos (versiones de software)
   1. Rocky Linux 9.6 o Alma Linux 9
   2. Elasticsearch 7.17.4
   3. Flunted v1-debian-elasticsearch 6d7521c55bc7
   4. Kibana 7.17.4
 
-# 🔧 Prerrequisitos de hardware
+# 🔧 Pre-requisitos de hardware
 
   Consulte: https://www.elastic.co/docs/deploy-manage/deploy/cloud-enterprise/ece-hardware-prereq
   
