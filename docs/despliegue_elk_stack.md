@@ -262,6 +262,12 @@ EOF
   ```
 
 ---
+### Vista Final de un despliegue correcto
+
+<img width="1600" height="905" alt="image" src="https://github.com/user-attachments/assets/bb4bb108-7ed2-43bb-8580-7de5dd7699cd" />
+
+
+---
 📘 **Autor:** Axel Bautista y Emanuel López
 📅 **Versión:** 1.0
 🧭 **Compatibilidad:** Kubernetes v1.28 / Rocky Linux / Fedora / RHEL-like
