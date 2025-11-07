@@ -45,6 +45,23 @@ chmod +x nombre_del_scrip.sh  -> para darle permiso de ejecución
 3. elk_stack_installer.sh
 4. certificados_elasticsearch.sh
 
+# 🐛 Troubleshooting
+
+**1. Problema de comunicacion entre pods**
+
+_Descripcion:_ Es comun que con la configuracion por defecto de calico y kubernetes los pods que se creen puedan verse hacia el exterior pero no entre si por lo cual para resolver este proble hay dos opciones
+
+_Solucion temporal:_ Apagar el firewall, esta obviamente es una solucion temporal que puede ayudar en caso de tratar de ubicar el problema
+
+_Solucion Permanente._ Hay que llevar a cabo la apertura de los puertos correspondientes, para que los nodos no queden expuestos en el resto de elementos
+
+**2. Problema de permisos para el almacenamiento permanente**
+
+Por las configuraciones que se manejan los servicios, es posible que al momento de la creacion puedan faltar problemas por las condiciones de carrera que existen al momento de ejecutar los scripts dados, por lo cual en caso de que los logs de los pods de elastic search muestren que el acceso a los recursos necesarios no es permitido hay que ejecutar los siguientes comandos: 
+
+_sudo chown -R 1000:1000 /srv/nfs/k8s-storage/_
+
+_sudo chmod -R 777 /srv/nfs/k8s-storage_
 
 # 🔗 Referencias y documentación
 
