@@ -30,14 +30,15 @@ El propósito fundamental de este proyecto final para el Diplomado de Infraestru
 Para desplegar el proyecto ELK-Stack, revise detenidamente el apartado de docs para consultar los manuales de instalación. Una vez revisado y comprendido su contenido ejecute los scrips en el siguiente orden. Recuerde tener privilegios de administrador y que el scrip tenga permisos de ejecución. Puede apoyarse de: 
 
 chmod +x nombre_del_scrip.sh  -> para darle permiso de ejecución
+
 ./nombre_del_scrip.sh -> para la ejecución
 
 **Orden de ejecución**
 
 1. kubernetes_installer.sh
 2. nfs_installer.sh
-3. elk_stack_despliegue.sh
-4. certificados.sh
+3. elk_stack_installer.sh
+4. certificados_elasticsearch.sh
 
 
 # 🔗 Referencias y documentación
