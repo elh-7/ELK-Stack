@@ -1,0 +1,83 @@
+# ========================
+# ELASTICSEARCH STATEFULSET
+# ========================
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: logging
+spec:
+  serviceName: "elasticsearch"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        env:
+        - name: cluster.name
+          value: "efk-cluster"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: discovery.seed_hosts
+          value: "elasticsearch-0.elasticsearch.logging.svc.cluster.local,elasticsearch-1.elasticsearch.logging.svc.cluster.local,elasticsearch-2.elasticsearch.logging.svc.cluster.local"
+        - name: cluster.initial_master_nodes
+          value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        - name: xpack.security.enabled
+          value: "true"
+        - name: xpack.security.authc.api_key.enabled
+          value: "true"
+        - name: ELASTIC_PASSWORD
+          value: "TuPasswordSeguro"
+        - name: xpack.security.transport.ssl.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.verification_mode
+          value: "certificate"
+        - name: xpack.security.transport.ssl.key
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.key"
+        - name: xpack.security.transport.ssl.certificate
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.crt"
+        - name: xpack.security.transport.ssl.certificate_authorities
+          value: "/usr/share/elasticsearch/config/certs/ca.crt"
+        - name: xpack.security.http.ssl.enabled
+          value: "true"
+        - name: xpack.security.http.ssl.key
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.key"
+        - name: xpack.security.http.ssl.certificate
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.crt"
+        - name: xpack.security.http.ssl.certificate_authorities
+          value: "/usr/share/elasticsearch/config/certs/ca.crt"
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+        - name: certs
+          mountPath: /usr/share/elasticsearch/config/certs
+          readOnly: true
+      volumes:
+      - name: certs
+        secret:
+          secretName: elastic-certs
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: nfs-csi
+      resources:
+        requests:
+          storage: 10Gi
