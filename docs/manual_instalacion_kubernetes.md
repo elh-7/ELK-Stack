@@ -307,5 +307,3 @@ echo "Worker preparado. Use el comando 'kubeadm join' del master..."
 📘 **Autor:** Axel Bautista y Emanuel López
 📅 **Versión:** 1.0
 🧭 **Compatibilidad:** RHEL / Rocky / AlmaLinux / Fedora
-
-```
