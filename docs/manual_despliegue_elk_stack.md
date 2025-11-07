@@ -262,4 +262,6 @@ EOF
   ```
 
 ---
-
+📘 **Autor:** Axel Bautista y Emanuel López
+📅 **Versión:** 1.0
+🧭 **Compatibilidad:** Kubernetes v1.28 / Rocky Linux / Fedora / RHEL-like
