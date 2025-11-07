@@ -6,6 +6,8 @@ Este documento describe el procedimiento técnico para la **instalación y confi
 
 El proceso se realiza mediante un **script Bash** que ejecuta paso a paso todas las operaciones necesarias de instalación, configuración y despliegue.
 
+NOTA IMPORTANTE: Instalar nfs utils en todos los nodos. 
+
 ---
 
 ## 📜 Descripción del Script
